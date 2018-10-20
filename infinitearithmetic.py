@@ -73,6 +73,7 @@ def MultiplyInfInt(a, b, i, n):
 
 	
 def SolveLine(s, n):
+    s = s.replace(' ', '')
     find = re.search('((add|multiply)\(\d+,\d+\))', s)
     if not find:
         return [-1]
@@ -96,12 +97,31 @@ def SolveLine(s, n):
 def SolveInput(s, n):
     if len(s) == 0:
         return
-    result = SolveLine(s[0], n)
-    if result != [-1]:
-        print(s[0], "=", InfIntToStr(result, 0, n))
-    else:
-        print("Invalid expression: ", s[0])
+    if re.search('(.+)', s[0]):
+        result = SolveLine(s[0], n)
+        if result != [-1]:
+            resultStr = InfIntToStr(result, 0, n)
+            # print(s[0], "=", resultStr, " ", TestInput(s[0], resultStr))
+            print(s[0], "=", resultStr)
+        else:
+            print("Invalid expression: ", s[0])
     SolveInput(s[1:], n)
+
+def SolveInput2(s, n):
+    if re.search('(.+)', s):
+        result = SolveLine(s, n)
+        if result != [-1]:
+            resultStr = InfIntToStr(result, 0, n)
+            print s, "=", resultStr
+        else:
+            print "Invalid expression: ", s
+
+def TestInput(s, n):
+    def multiply(a, b):
+        return a * b
+    def add(a, b):
+        return a + b
+    return int(eval(s)) == int(n)
 	
 
 if len(sys.argv) < 2:
@@ -109,6 +129,10 @@ if len(sys.argv) < 2:
 
 else:
     args = re.match("input=(.*);digitsPerNode=(\d+)", sys.argv[1])
+
+    if not args:
+        print("Malformed input on command line.")
+        quit(-1)
 	
     inputFilename = args.group(1)
     digitsPerNode = int(args.group(2))
@@ -116,4 +140,6 @@ else:
     infile = open(inputFilename, 'r')
     lines = infile.read().split("\n")
 
-    SolveInput(lines, digitsPerNode)
+    # print(map(lambda x: x *2, [1, 2, 3, 4, 5]))
+    # SolveInput(lines, digitsPerNode)
+    map(lambda x: SolveInput2(x, digitsPerNode), lines)
