@@ -61,9 +61,6 @@ def AddInfInt(a, b, c, n):
     a = a[:-1]
     b = b[:-1]
     return (AddInfInt(a, b, carry, n) or []) + [sum]
-    # result = AddInfInt(a, b, carry, n) or []
-    # result += [sum]
-    # return result
 
 def MultiplyAcross(a, b, i, n):
     # TODO: Documnentation
