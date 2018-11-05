@@ -1,5 +1,14 @@
 multiply(0, 0)
 add(0,1)
+add(0,
+add(,
+add()
+add(1)
+multiply(0,1)
+multiply(0,
+multiply(,
+multiply()
+multiply(1)
 add(add(1,1),add(1, 1))
 multiply(123456,2593)
 multiply(2,2000000000000000)
