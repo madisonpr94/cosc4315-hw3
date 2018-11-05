@@ -150,6 +150,7 @@ def LexLine(s):
         token_list = [re.match("^(add|multiply|\(|\)|,|\d+)", s).group(0)]
         return token_list + (LexLine(s[len(token_list[0]):]) or [])
     else:
+        # Invalid token encountered
         return None
 
 def SolveLine(s, a, n):
