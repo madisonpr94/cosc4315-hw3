@@ -49,8 +49,8 @@ def AddInfInt(a, b, c, n):
     removed and addition continues towards the most signicant digits. Each
     recursive step returns the full infinite integer list for the addition
     performed so far.
-    
-    Precondition: a and b are lists of integers, c is the carry-in 
+
+    Precondition: a and b are lists of integers, c is the carry-in
         value (must start at 0), n is the digits per node
     Postcondition: returns a + b
     """
@@ -142,7 +142,7 @@ def SolveLine(s, a, n):
     in the token list, linearly scanning the token list each time until the list
     of tokens is either a single result or unresolvable (invalid)
 
-    Precondition: s is a list of input tokens, a is the index into the token 
+    Precondition: s is a list of input tokens, a is the index into the token
         list (must start at 0), n is the digits per node
     Postcondition: returns the numerical result of the operation on the given
         line (represented by tokens s)
@@ -158,16 +158,21 @@ def SolveLine(s, a, n):
         if type(s[a + 1]) == list or re.search("(\d+)", s[a + 1]):
             if type(s[a + 2]) == list or re.search("(\d+)", s[a + 2]):
                 # The next two tokens are numbers [operator(int, int)]
-                return SolveLine(s[:a] + [AddInfInt(StrToInfInt(s[a+1],n),StrToInfInt(s[a+2],n),0,n) if s[a] == "add" else MultiplyInfInt(StrToInfInt(s[a+1],n),StrToInfInt(s[a+2],n),0,n)] + s[(a+3):], 0, n)
+                return SolveLine(s[:a] +
+                                 [AddInfInt(StrToInfInt(s[a + 1], n),
+                                            StrToInfInt(s[a + 2], n), 0, n) if s[a] == "add" else
+                                  MultiplyInfInt(StrToInfInt(s[a + 1], n),
+                                                 StrToInfInt(s[a + 2], n), 0, n)] + s[(a+3):],
+                                 0, n)
 
-    return SolveLine(s, a + 1, n)    
+    return SolveLine(s, a + 1, n)
 
 def SolveInput(s, n):
     """Parses a single line using s and prints out the evalutated line or
     or an error message if the line is malformed.
-    
+
     Precondition: s is a string representing a line of input, n is the digits per node
-    Postcondition: displays the input statement and the corresponding result, or 
+    Postcondition: displays the input statement and the corresponding result, or
         "Invalid expression" if the statement was invalid
     """
     if re.search('(.+)', s):
