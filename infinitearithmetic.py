@@ -10,25 +10,35 @@ def StrToInfInt(s, n):
     step of the recursion then adds its n ending characters to the resulting
     list of the previous step until the full integer is built. This solution
     naturally "aligns" digits such that any non-full nodes are shifted to the
-    most signicant digits."""
+    most signicant digits.
+
+    Precondition: s is a string representing a number, n is the digits per node
+    Postcondition: Returns a list of integers representing the number in the input string
+    """
+
+    if type(s) == list: # Inf int was provided as input
+        return s
+
     if(len(s) <= n):
         return [int(s)]
+
     else:
-        si = int(s[-n:])
-        t = StrToInfInt(s[:-n], n)
-        t.append(si)
-        return t
+        return StrToInfInt(s[:-n], n) + [int(s[-n:])]
 
 def InfIntToStr(s, i, n):
     """Accepts a list of numbers as an infinite integer and converts it to a
-    string."""
+    string.
+
+    Precondition: s is a list of integers, i is an index
+        into that list, and n is the digits per node
+    Postcondition: returns a string representing s
+    """
     if i == len(s):
         return ""
     elif i == 0:
-        result = str(s[i]) + InfIntToStr(s, i + 1, n)
+        return str(int(s[i])) + InfIntToStr(s, i + 1, n)
     else:
-        result = str(s[i]).zfill(n) + InfIntToStr(s, i + 1, n)
-    return result
+        return str(int(s[i])).zfill(n) + InfIntToStr(s, i + 1, n)
 
 def AddInfInt(a, b, c, n):
     """Two infnite integers are given to be added together. Starting from the
@@ -38,45 +48,47 @@ def AddInfInt(a, b, c, n):
     the sum for the current step by 10n . The last elements in both lists are
     removed and addition continues towards the most signicant digits. Each
     recursive step returns the full infinite integer list for the addition
-    performed so far."""
+    performed so far.
+    
+    Precondition: a and b are lists of integers, c is the carry-in 
+        value (must start at 0), n is the digits per node
+    Postcondition: returns a + b
+    """
+    if a == None or b == None:
+        return None
+
     if a == b == []:
         if c != 0:
             return [c]
         else:
             return
-    if len(a) > 0:
-        ai = a[-1]
-    else:
-        ai = 0
-    if len(b) > 0:
-        bi = b[-1]
-    else:
-        bi = 0
-    sum = c + ai + bi
-    if sum >= 10 ** n:
-        sum -= 10 ** n
-        carry = 1
-    else:
-        carry = 0
-    a = a[:-1]
-    b = b[:-1]
-    return (AddInfInt(a, b, carry, n) or []) + [sum]
+
+    sum = (c + (a[-1] if len(a) > 0 else 0) + (b[-1] if len(b) > 0 else 0))
+    return (AddInfInt(a[:-1], b[:-1], math.floor(sum / 10 ** n), n) or []) + [sum % (10 ** n)]
 
 def MultiplyAcross(a, b, i, n):
-    # TODO: Documnentation
+    """This function performs a single multiplication sub-step by multiplying
+    one node of b against every node of a and summing the results before returning
+    the total value for this sub-step of the multiplication.
+
+    Precondition: a is a list of integers, b is a single integer,
+        i = 0 (index into a), n = digits per node
+    Postcondition: returned value is a * b
+    """
     if i == len(a):
         return [0]
     else:
-        pnext = MultiplyAcross(a, b, i + 1, n)
-        product = b * a[i]
-        carry = 0
-        if product >= 10 ** n:
-            carry = math.floor(product / 10 ** n)
-            product = product % (10 ** n)
-        product = [product] + [0] * (len(a) - i - 1)
-        if carry > 0:
-            product = [carry] + product
-    return AddInfInt(product, pnext, 0, n)
+        # (b * a[i]) % 10 ** n is the subresult for this multiplication sub-step
+        # math.floor((b * a[i]) / 10 ** n) is the carry value to the next step
+        # (len(a) - i - 1) zeroes are added to the end of the result list to reach
+        #       correct significance
+        if math.floor((b * a[i]) / 10 ** n) == 0:
+            return AddInfInt([(b * a[i]) % (10 ** n)] + [0] * (len(a) - i - 1),\
+             MultiplyAcross(a, b, i + 1, n), 0, n)
+        else:
+            return AddInfInt([math.floor((b * a[i]) / 10 ** n)] + \
+            [(b * a[i]) % (10 ** n)] + [0] * (len(a) - i - 1),\
+             MultiplyAcross(a, b, i + 1, n), 0, n)
 
 def MultiplyInfInt(a, b, i, n):
     """This operation is performed similarly to multiplication by hand. The
@@ -96,86 +108,75 @@ def MultiplyInfInt(a, b, i, n):
     important to be mindful of carry-out values; while the equation above does
     not need to respect carry-out, it must be ensured that the algorithm
     respects the specific digits per node requirement. Therefore, each step of
-    the recursion should produce an infnite integer of the form
-    [carry][product] (i+j)*[0] to be added to each successive step."""
+    the recursion should produce an infinite integer of the form
+    [carry][product] (i+j)*[0] to be added to each successive step.
+
+    Precondition: a and b are lists of integers, i is 0 (index into b),
+         n is digits per node
+    Postcondition: Returned value is a * b
+    """
     if i == len(b):
         return [0]
     else:
-        resultnext = MultiplyInfInt(a, b, i + 1, n)
-        result = MultiplyAcross(a, b[i], 0, n)
-        result = result + [0] * (len(b) - i - 1)
-        return AddInfInt(result, resultnext, 0, n)
+        return AddInfInt(MultiplyAcross(a, b[i], 0, n) + [0] * (len(b) - i - 1), MultiplyInfInt(a, b, i + 1, n), 0, n)
 
+def LexLine(s):
+    """Uses regular expression matching to extract discrete tokens from lines
+    of input and places them into a list
 
-def SolveLine(s, n):
-    """The goal is to take a single line of input in the form of an expression,
-    and produce an infinite integer result. As with prior algorithms, this will
-    be a recursive approach. All input provided to this algorithm will be in
-    the form [function name] followed by either an integer constant or another
-    [function name] (...). Function calls should be recursively evaluated and
-    reduced to infinite integer constants, which can be operated upon. Regular
-    expressions will be used to identify sections of the input string in the
-    form [function name]([constant], [constant]). These subexpressions will be
-    solved and their results re-inserted into the input expression until the
-    entire expression is solved."""
-    s = s.replace(' ', '')
-    find = re.search('((add|multiply)\(\d+,\d+\))', s)
-    if not find:
-        return None
+    Precondition: s is a string representing a line of input
+    Postcondition: returns a list of tokens representing the
+        given input
+    """
+    if s == "":
+        return []
+    if re.match("^(add|multiply|\(|\)|,|\d+)", s):
+        token_list = [re.match("^(add|multiply|\(|\)|,|\d+)", s).group(0)]
+        return token_list + (LexLine(s[len(token_list[0]):]) or [])
     else:
-        if find.group(1) == s:
-            si = s.split('(')
-            numResults = re.match("([0-9]+),([0-9]+)", si[1])
-            nums = [StrToInfInt(numResults.group(1), n),
-                    StrToInfInt(numResults.group(2), n)]
-            if si[0] == "add":
-                x = AddInfInt(nums[0], nums[1], 0, n)
-            elif si[0] == "multiply":
-                x = MultiplyInfInt(nums[0], nums[1], 0, n)
-            return x
-        else:
-            s1 = s[find.start(1):find.end(1)]
-            x = SolveLine(s1, n)
-            s = s.replace(s1, InfIntToStr(x, 0, n))
-            return SolveLine(s, n)
+        print "Invalid input:", s
+        return None
 
-# def SolveInput(s, n):
-#     """Parses a list of lines using s and prints out every evaluated line or
-#     an error message for every malformed line."""
-#     if len(s) == 0:
-#         return
-#     if re.search('(.+)', s[0]):
-#         result = SolveLine(s[0], n)
-#         if result != [-1]:
-#             resultStr = InfIntToStr(result, 0, n)
-#             # print(s[0], "=", resultStr, " ", TestInput(s[0], resultStr))
-#             print(s[0], "=", resultStr)
-#         else:
-#             print("Invalid expression: ", s[0])
-#     SolveInput(s[1:], n)
+def SolveLine(s, a, n):
+    """Replaces sets of terminal tokens [operator(int, int)] with their results
+    in the token list, linearly scanning the token list each time until the list
+    of tokens is either a single result or unresolvable (invalid)
+
+    Precondition: s is a list of input tokens, a is the index into the token 
+        list (must start at 0), n is the digits per node
+    Postcondition: returns the numerical result of the operation on the given
+        line (represented by tokens s)
+    """
+
+    if len(s) == 1:
+        return s[0]
+    if (a + 2) >= len(s):
+        # Invalid input (No remaining solvable operations)
+        return None
+
+    if s[a] in ["add", "multiply"]:
+        if type(s[a + 1]) == list or re.search("(\d+)", s[a + 1]):
+            if type(s[a + 2]) == list or re.search("(\d+)", s[a + 2]):
+                # The next two tokens are numbers [operator(int, int)]
+                return SolveLine(s[:a] + [AddInfInt(StrToInfInt(s[a+1],n),StrToInfInt(s[a+2],n),0,n) if s[a] == "add" else MultiplyInfInt(StrToInfInt(s[a+1],n),StrToInfInt(s[a+2],n),0,n)] + s[(a+3):], 0, n)
+
+    return SolveLine(s, a + 1, n)    
 
 def SolveInput(s, n):
     """Parses a single line using s and prints out the evalutated line or
-    or an error message if the line is malformed."""
-    # TODO: Documentation
+    or an error message if the line is malformed.
+    
+    Precondition: s is a string representing a line of input, n is the digits per node
+    Postcondition: displays the input statement and the corresponding result, or 
+        "Invalid expression" if the statement was invalid
+    """
     if re.search('(.+)', s):
-        result = SolveLine(s, n)
+        result = SolveLine(filter(lambda a: a not in ['(', ')', ','], LexLine(s.replace(' ', '')) or []), 0, n)
         if result:
-            resultStr = InfIntToStr(result, 0, n)
-            print s, "=", resultStr
+            print s, "=", InfIntToStr(result, 0, n)
         else:
-            print "Invalid expression: ", s
+            print "Invalid expression:", s
 
-def TestInput(s, n):
-    """DEBUGGING PURPOSES ONLY:
-
-    Using the python interpreter itself via eval(), evaluate an input
-    function call and compare it against our result."""
-    def multiply(a, b):
-        return a * b
-    def add(a, b):
-        return a + b
-    return int(eval(s)) == int(n)
 
 
 if len(sys.argv) < 2:
@@ -186,14 +187,15 @@ else:
     args = re.match("input=(.*);digitsPerNode=(\d+)", sys.argv[1])
 
     if not args:
-        print "Malformed input on command line."
+        print ("Usage: python2 infinitearithmetic.py \"" +
+            "input=<file name>;digitsPerNode=<number>\"")
         quit(-1)
 
     inputFilename = args.group(1)
     digitsPerNode = int(args.group(2))
 
     infile = open(inputFilename, 'r')
-    lines = infile.read().split("\n")
+    lines = infile.read().replace("\r","").split("\n")
 
     # SolveInput(lines, digitsPerNode)
     map(lambda x: SolveInput(x, digitsPerNode), lines)
