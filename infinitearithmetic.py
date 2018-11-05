@@ -37,9 +37,7 @@ def InfIntToStr(s, i, n):
     Postcondition:
         returns a string representing s
     """
-    if type(s) is str:
-        return "Invalid Operand"
-    elif i == len(s):
+    if i == len(s):
         return ""
     elif i == 0:
         return str(int(s[i])) + InfIntToStr(s, i + 1, n)
@@ -143,7 +141,8 @@ def LexLine(s):
     Precondition:
         s is a string representing a line of input
     Postcondition:
-        returns a list of tokens representing the given input
+        returns a list of tokens representing the given input (or None, if
+        a invalid token is encountered)
     """
     if s == "":
         return []
@@ -151,7 +150,6 @@ def LexLine(s):
         token_list = [re.match("^(add|multiply|\(|\)|,|\d+)", s).group(0)]
         return token_list + (LexLine(s[len(token_list[0]):]) or [])
     else:
-        print "Invalid input:", s
         return None
 
 def SolveLine(s, a, n):

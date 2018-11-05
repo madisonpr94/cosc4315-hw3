@@ -1,0 +1,62 @@
+
+Authors:
+  Aaron Rohan
+    PSID 1305191
+    cosc2995
+  Madison Pratt
+    PSID 1498565
+    cosc2993
+
+Usage:
+
+  python2 infinitearithmetic.py "input=<file name>;digitsPerNode=<number>"
+
+Limitations:
+
+  - Cannot handle more than two arguments, e.g. multiply(1, 2, 3) evaluating to
+    1 * 2 * 3, which we believe was not required by the assignment anyway
+
+  - Requires Python 2.7
+
+Notes:
+
+  - Every function here is heavily documented as-is, so more detailed explanations
+    can be found inside the source.
+
+  - Higher-order functions were used to replace the typical imperative constructs,
+    especially map() and filter(), along with lambda functions. When they were too
+    limited, we used straight recursive behavior. Expresssional if-else statements
+    were also used.
+
+  - We had considered (and attempted) to make a recursive descent parser
+    originally but found that it was difficult to implement in a stateless
+    manner, especially in regards to the seek in the token stream, so we
+    eventually deferred to a more simpler (but still functionally "pure") using
+    Python's basic string utilities, repetitively searching for a combination
+    [operator, value, value] and solving that sub-expression until the whole
+    expression is collapsed down to a single value.
+
+  - To help test and validate the correctness of our program, since Python is an
+    an interpreted language, we used eval() and checked that result against our
+    calculation. (see TestInput())
+
+  - Prior to the parsing stage, we lex each line (using map()) using regex
+    (regular expressions) into a token stream (and also validate whether a line
+    is a correct token stream)
+
+  - Strings are recursively sliced up into nodes (based on the "digits per node"
+    user setting) into what we call "infinite integer lists".
+
+  - Addition is implemented in a recursive manner similar to carrying by hand
+    (see source for more detailed documentation)
+
+  - Multiplication is implemented by multiplying groups of digits
+    together and summing the result (reusing our addition code), deferring
+    sub-multiplicative steps to another function, MultiplyAcross(), making sure
+    also to take care of the proper carrying out of integers.
+
+  - To tackle the functional style, we started out from a more typically
+    mathematical approach to the problem and adapted it to code, initially using
+    a few imperative constructs to help build our understanding during
+    development and then finally replacing these in pursuit of functional
+    purity.
