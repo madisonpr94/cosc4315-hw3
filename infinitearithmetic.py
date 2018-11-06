@@ -192,19 +192,21 @@ def SolveLine(s, a, n):
     return SolveLine(s, a + 1, n)
 
 def SolveInput(s, n):
-    """Parses a single line using s and prints out the evalutated line or
+    """Recursively parses single lines of s, a list of input lines, and prints out the evalutated line or
     or an error message if the line is malformed.
 
     Precondition:
-        s is a string representing a line of input, n is the digits per node
+        s is a list of strings representing lines of input, n is the digits per node
     Postcondition:
         displays the input statement and the corresponding result, or "Invalid
         expression" if the statement was invalid
     """
 
-    if re.search('(.+)', s):
-        result = SolveLine(filter(lambda a: a not in ['(', ')', ','],
-                                  LexLine(s.replace(' ', '')) or []), 0, n)
+    if len(s) == 0:
+        return
+    else:
+        result = SolveLine(list(filter(lambda a: a not in ['(', ')', ','],
+                                LexLine(s[0].replace(' ', '')) or [])), 0, n)
         if result and not type(result) == str:
             # def TestInput(solved, inputString):
             #     """Evaluates input using the python interpreter directly. Used
@@ -217,10 +219,11 @@ def SolveInput(s, n):
             #         return a + b
             #     correctness = solved == str(eval(inputString))
             #     return solved + " " + str(correctness)
-            # print s, "=", TestInput(InfIntToStr(result, 0, n), s)
-            print s, "=", InfIntToStr(result, 0, n)
+            # print (s[0], "=", TestInput(InfIntToStr(result, 0, n), s[0]))
+            print (s[0], "=", InfIntToStr(result, 0, n))
         else:
-            print "Invalid expression:", s
+            print ("Invalid expression:", s[0])
+        SolveInput(s[1:], n)
 
 
 if len(sys.argv) < 2:
@@ -241,4 +244,5 @@ else:
     infile = open(inputFilename, 'r')
     lines  = infile.read().replace("\r","").split("\n")
 
-    map(lambda x: SolveInput(x, digitsPerNode), lines)
+    #map(lambda x: SolveInput(x, digitsPerNode), lines)
+    SolveInput(lines, digitsPerNode)
