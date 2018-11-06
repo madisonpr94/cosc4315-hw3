@@ -9,24 +9,24 @@ Authors:
 
 Usage:
 
-  python2 infinitearithmetic.py "input=<file name>;digitsPerNode=<number>"
+  python3 infinitearithmetic.py "input=<file name>;digitsPerNode=<number>"
 
 Limitations:
 
   - Cannot handle more than two arguments, e.g. multiply(1, 2, 3) evaluating to
     1 * 2 * 3, which we believe was not required by the assignment anyway
 
-  - Requires Python 2.7
+  - Requires Python 3.7.1
 
 Notes:
 
   - Every function here is heavily documented as-is, so more detailed explanations
     can be found inside the source.
 
-  - Higher-order functions were used to replace the typical imperative constructs,
-    especially map() and filter(), along with lambda functions. When they were too
-    limited, we used straight recursive behavior. Expresssional if-else statements
-    were also used.
+  - Higher-order functions were used to replace the typical imperative
+    constructs, especially filter(), along with lambda functions. When they were
+    too limited, we used straight recursive behavior. Expresssional if-else
+    statements were also used.
 
   - We had considered (and attempted) to make a recursive descent parser
     originally but found that it was difficult to implement in a stateless
