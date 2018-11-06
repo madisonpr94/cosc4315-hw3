@@ -204,6 +204,8 @@ def SolveInput(s, n):
 
     if len(s) == 0:
         return
+    elif s[0] == "":
+        SolveInput(s[1:], n)
     else:
         result = SolveLine(list(filter(lambda a: a not in ['(', ')', ','],
                                 LexLine(s[0].replace(' ', '')) or [])), 0, n)
@@ -227,14 +229,14 @@ def SolveInput(s, n):
 
 
 if len(sys.argv) < 2:
-    print ("Usage: python2 infinitearithmetic.py \"" +
+    print ("Usage: python3 infinitearithmetic.py \"" +
            "input=<file name>;digitsPerNode=<number>\"")
 
 else:
     args = re.match("input=(.*);digitsPerNode=(\d+)", sys.argv[1])
 
     if not args:
-        print ("Usage: python2 infinitearithmetic.py \"" +
+        print ("Usage: python3 infinitearithmetic.py \"" +
             "input=<file name>;digitsPerNode=<number>\"")
         quit(-1)
 
@@ -244,5 +246,4 @@ else:
     infile = open(inputFilename, 'r')
     lines  = infile.read().replace("\r","").split("\n")
 
-    #map(lambda x: SolveInput(x, digitsPerNode), lines)
     SolveInput(lines, digitsPerNode)
