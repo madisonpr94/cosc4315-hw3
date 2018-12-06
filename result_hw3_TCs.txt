@@ -1,0 +1,10 @@
+add(372,1000) = 1372
+Invalid expression: add(,93)
+add(add(2,3),53) = 58
+add(7,add(add(2,48),83)) = 140
+multiply(76,1) = 76
+multiply(multiply(1,1),0) = 0
+multiply(multiply(multiply(10,5),multiply(4,1)),2) = 400
+multiply(multiply(32,multiply(2,8)),multiply(4,5)) = 10240
+add(multiply(add(add(3,9),8),4),2) = 82
+multiply(7,add(add(56,8),multiply(add(6,22),0))) = 448
